@@ -68,16 +68,6 @@
 
 ---
 
-## 📁 Структура проекта
-calorie-calculator/
-├── index.html ← разметка
-├── style.css ← все стили
-├── script.js ← вся логика
-├── README.md
-└── LICENSE
-
----
-
 ## 🛠 Технологии
 
 - Чистый **HTML5**, **CSS3**, **JavaScript (ES6+)**
