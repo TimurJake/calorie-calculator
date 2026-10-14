@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Калькулятор калорий</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍎</text></svg>"><meta name="theme-color" content="#08080d">
+    <meta name="apple-mobile-web-app-title" content="Калории">
+</head>
+<body>
+
+    <div class="bg" aria-hidden="true">
+    <div class="stars" id="stars"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+    <div class="orb orb-5"></div>
+    </div>
+
+    <div class="app">
+
+    <header>
+        <span class="h-title">Калькулятор калорий</span>
+        <span class="h-sub">Данные сохраняются автоматически</span>
+
+        <button class="icon-btn" id="exportBtn" title="Экспорт данных в JSON">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        </button>
+        <button class="icon-btn" id="importBtn" title="Импорт данных из JSON">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        </button>
+        <input type="file" id="importFile" accept="application/json,.json" style="display:none;">
+
+        <button class="theme-toggle" id="themeToggle" title="Сменить тему">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </svg>
+        </button>
+    </header>
+
+    <div class="layout">
+
+        <aside class="side">
+        <div class="card">
+            <div class="card-title">Профиль</div>
+
+            <div class="field">
+            <label>Пол</label>
+            <div class="segmented">
+                <input type="radio" name="gender" id="male" value="male" checked>
+                <label for="male">Мужской</label>
+                <input type="radio" name="gender" id="female" value="female">
+                <label for="female">Женский</label>
+            </div>
+            </div>
+
+            <div class="row">
+            <div class="field">
+                <label>Возраст</label>
+                <input type="number" id="age" value="28" min="10" max="100">
+            </div>
+            <div class="field">
+                <label>Рост, см</label>
+                <input type="number" id="height" value="178" min="100" max="250">
+            </div>
+            </div>
+
+            <div class="field" style="margin-bottom:0;">
+            <label>Вес, кг</label>
+            <input type="number" id="weight" value="72" min="30" max="300" step="0.1">
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Активность</div>
+            <div class="activity-list" id="activityList">
+            <div class="activity-item" data-k="1.2"><span class="dot"></span><span>Сидячий</span><small>×1.2</small></div>
+            <div class="activity-item" data-k="1.375"><span class="dot"></span><span>Лёгкая</span><small>×1.375</small></div>
+            <div class="activity-item active" data-k="1.55"><span class="dot"></span><span>Средняя</span><small>×1.55</small></div>
+            <div class="activity-item" data-k="1.725"><span class="dot"></span><span>Высокая</span><small>×1.725</small></div>
+            <div class="activity-item" data-k="1.9"><span class="dot"></span><span>Очень высокая</span><small>×1.9</small></div>
+            </div>
+        </div>
+        </aside>
+
+        <main class="main">
+
+        <div class="card result-card">
+            <div class="goal-select" id="goalSelect">
+            <button class="goal-btn" data-goal="cut">Похудение</button>
+            <button class="goal-btn active" data-goal="maintain">Поддержание</button>
+            <button class="goal-btn" data-goal="bulk">Набор</button>
+            </div>
+
+            <div class="result-top">
+            <div class="ring-wrap">
+                <svg class="ring" viewBox="0 0 120 120">
+                <defs>
+                    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="var(--ring-1)"/>
+                    <stop offset="100%" stop-color="var(--ring-2)"/>
+                    </linearGradient>
+                </defs>
+                <circle cx="60" cy="60" r="52" class="ring-bg"/>
+                <circle cx="60" cy="60" r="52" class="ring-fill" id="ringFill"/>
+                </svg>
+                <div class="ring-center">
+                <div class="ring-pct" id="ringPct">0%</div>
+                <div class="ring-sub">цель</div>
+                </div>
+            </div>
+
+            <div class="result-info">
+                <div class="result-label" id="goalLabel">Дневная цель</div>
+                <div class="result-value" id="kcal">—</div>
+                <div class="result-detail">
+                <span data-goal="bmr"><span>Базовый метаболизм:</span> <b id="bmr">—</b></span>
+                <span data-goal="cut"><span>Для похудения:</span> <b id="cut">—</b></span>
+                <span data-goal="maintain"><span>Поддержание:</span> <b id="maintain">—</b></span>
+                <span data-goal="bulk"><span>Для набора:</span> <b id="bulk">—</b></span>
+                </div>
+            </div>
+            </div>
+
+            <div class="macros">
+            <div>
+                <div class="macro-head"><span>Белки</span><span><b id="pConsumed">0</b> / <span id="pTarget">0</span> г</span></div>
+                <div class="macro-bar"><div class="macro-fill p" id="pFill"></div></div>
+            </div>
+            <div>
+                <div class="macro-head"><span>Жиры</span><span><b id="fConsumed">0</b> / <span id="fTarget">0</span> г</span></div>
+                <div class="macro-bar"><div class="macro-fill f" id="fFill"></div></div>
+            </div>
+            <div>
+                <div class="macro-head"><span>Углеводы</span><span><b id="cConsumed">0</b> / <span id="cTarget">0</span> г</span></div>
+                <div class="macro-bar"><div class="macro-fill c" id="cFill"></div></div>
+            </div>
+            </div>
+
+            <div class="chart-wrap">
+            <div class="chart-head">
+                <span class="chart-title">Тренд</span>
+                <div class="chart-toggle">
+                <button class="chart-range active" data-range="7">7 дней</button>
+                <button class="chart-range" data-range="30">30 дней</button>
+                </div>
+            </div>
+            <div class="chart" id="chart"></div>
+            </div>
+        </div>
+
+        <div class="card meals-card">
+            <div class="card-head">
+            <div class="card-title">Мои блюда</div>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <div class="day-nav">
+                <button class="day-btn" id="prevDay" title="Предыдущий день">‹</button>
+                <span class="day-label" id="dayLabel">Сегодня</span>
+                <button class="day-btn" id="nextDay" title="Следующий день">›</button>
+                </div>
+                <button class="danger-btn" id="clearDay">Очистить день</button>
+            </div>
+            </div>
+
+            <div class="favorites-panel hidden" id="favoritesPanel">
+            <span class="fav-label">Избранное</span>
+            <div class="fav-list" id="favList"></div>
+            </div>
+
+            <div class="meal-form">
+            <div class="quick-section" id="quickSection">
+                <button class="quick-toggle" id="quickToggle" type="button">
+                <span class="quick-toggle-icon">⚡</span>
+                <span class="quick-toggle-text">Быстрое добавление</span>
+                <span class="quick-toggle-count" id="quickCount">0</span>
+                <svg class="quick-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
+                </button>
+                <div class="quick-panel" id="quickPanel">
+                <div class="quick-panel-inner">
+                    <div class="quick-tabs" id="quickTabs"></div>
+                    <div class="quick-grid" id="quickGrid"></div>
+                </div>
+                </div>
+            </div>
+
+            <div class="form-main">
+                <input type="text" id="mealName" placeholder="Название блюда" maxlength="80">
+                <input type="text" id="mealKcal" placeholder="ккал" inputmode="decimal">
+                <input type="text" id="mealP" placeholder="Б" inputmode="decimal">
+                <input type="text" id="mealF" placeholder="Ж" inputmode="decimal">
+                <input type="text" id="mealC" placeholder="У" inputmode="decimal">
+                <button class="add-btn" id="addMeal" title="Добавить блюдо">
+                <span class="plus">+</span>
+                <span>Добавить</span>
+                </button>
+            </div>
+
+            <div class="tags-row">
+                <div class="tag-chips" id="tagChips"></div>
+                <input type="text" id="tagInput" class="tag-input" placeholder="+ свой тег" maxlength="24">
+            </div>
+
+            <button class="calc-toggle" id="calcToggle" type="button">Калькулятор по граммовке</button>
+            <div class="calc-panel hidden" id="calcPanel">
+                <div class="calc-row">
+                <div class="calc-cell"><label>Ккал/100г</label><input type="text" id="calcKcal" inputmode="decimal" placeholder="0"></div>
+                <div class="calc-cell"><label>Б</label><input type="text" id="calcP" inputmode="decimal" placeholder="0"></div>
+                <div class="calc-cell"><label>Ж</label><input type="text" id="calcF" inputmode="decimal" placeholder="0"></div>
+                <div class="calc-cell"><label>У</label><input type="text" id="calcC" inputmode="decimal" placeholder="0"></div>
+                <div class="calc-cell"><label>Грамм</label><input type="text" id="calcGrams" inputmode="decimal" placeholder="0"></div>
+                </div>
+                <div class="calc-result">
+                <span>Итого:</span>
+                <b id="calcResult">— ккал · Б 0 Ж 0 У 0</b>
+                <button class="calc-apply" id="calcApply" disabled>→ в форму</button>
+                </div>
+            </div>
+            </div>
+
+            <div class="meals-toolbar" id="mealsToolbar">
+            <div class="filters" id="filters"></div>
+            </div>
+
+            <div class="meals-list" id="mealList"></div>
+
+            <div class="meals-total">
+            <div class="total-row">
+                <span class="dim">Съедено за день</span>
+                <span><b id="totalEaten">0</b> <span class="dim">/ <span id="totalGoal">—</span> ккал</span></span>
+            </div>
+            <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+            </div>
+        </div>
+
+        </main>
+    </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
